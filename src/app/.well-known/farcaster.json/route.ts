@@ -5,11 +5,13 @@ export async function GET() {
 
   const config = {
     accountAssociation: {
-      header:
-        "eyJmaWQiOjM2MjEsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgyY2Q4NWEwOTMyNjFmNTkyNzA4MDRBNkVBNjk3Q2VBNENlQkVjYWZFIn0",
-      payload: "eyJkb21haW4iOiJmcmFtZXMtdjIudmVyY2VsLmFwcCJ9",
-      signature:
-        "MHhiNDIwMzQ1MGZkNzgzYTExZjRiOTllZTFlYjA3NmMwOTdjM2JkOTY1NGM2ODZjYjkyZTAyMzk2Y2Q0YjU2MWY1MjY5NjI5ZGQ5NTliYjU0YzEwOGI4OGVmNjdjMTVlZTdjZDc2YTRiMGU5NzkzNzA3YzkxYzFkOWFjNTg0YmQzNjFi",
+      message: {
+        domain: "hellnoeth-maschinequiz.vercel.app",
+        timestamp: 1738707303,
+        expirationTime: 1746483303
+      },
+      signature: "2dd03d8555cf7d00a091a72587c5e82077b113b9bdade231fa964e7e2f68c7360a30ad2462e20467e4bd5781236d944aa8c984c364a6c2ae86c5a08b28a400211c",
+      signingKey: "bf7782f6cdae4e9b19e914c752581f4eb0bff13594f0b33cdd2267a72ca837d9"
     },
     frame: {
       version: "1",
