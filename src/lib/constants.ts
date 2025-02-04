@@ -1,6 +1,6 @@
-export const PROJECT_ID = 'farcaster-frames-template';
+export const PROJECT_ID = 'MaschineQuiz';
 export const PROJECT_TITLE = "MaschineQuiz";
-export const PROJECT_DESCRIPTION = "Discover what's possible with Maschine Frameception";
+export const PROJECT_DESCRIPTION = "Test your knowledge of Maschine's capabilities with this interactive quiz!";
 export const QUIZ_TITLE = "Maschine Capabilities Quiz";
 export const QUIZ_DESCRIPTION = "Test your knowledge of Maschine's current capabilities";
 
