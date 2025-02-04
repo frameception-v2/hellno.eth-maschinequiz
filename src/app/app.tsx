@@ -7,8 +7,6 @@ const Frame = dynamic(() => import("~/components/Frame"), {
   ssr: false,
 });
 
-interface AppProps {}
-
-export default function App({}: AppProps) {
+export default function App() {
   return <Frame />;
 }
