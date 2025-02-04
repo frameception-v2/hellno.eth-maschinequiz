@@ -7,8 +7,10 @@ const Frame = dynamic(() => import("~/components/Frame"), {
   ssr: false,
 });
 
-export default function App(
-  { title }: { title?: string } = { title: PROJECT_TITLE }
-) {
+interface AppProps {
+  title?: string;
+}
+
+export default function App({ title = PROJECT_TITLE }: AppProps) {
   return <Frame title={title} />;
 }
