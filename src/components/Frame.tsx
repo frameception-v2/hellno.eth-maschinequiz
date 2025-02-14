@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useState } from "react";
+import Image from "next/image";
 import sdk, { AddFrame, type Context } from "@farcaster/frame-sdk";
 import { NeynarAPIClient, Configuration } from "@neynar/nodejs-sdk";
 import {
@@ -147,7 +148,7 @@ export default function Frame() {
               const result = await client.searchCasts({ 
                 q: searchParams.toString(),
                 limit: 5,
-                viewerFid: context?.user?.fid ? parseInt(context.user.fid) : undefined
+                viewerFid: context?.user?.fid ? Number(context.user.fid) : undefined
               });
               
               setSearchResults(result.result.casts);
@@ -203,10 +204,13 @@ export default function Frame() {
                 >
                   <div className="flex items-center gap-2 mb-1">
                     {cast.author.pfp_url && (
-                      <img 
+                      <Image 
                         src={cast.author.pfp_url} 
                         alt={cast.author.username}
+                        width={20}
+                        height={20}
                         className="w-5 h-5 rounded-full"
+                        unoptimized
                       />
                     )}
                     <div className="font-medium text-purple-600">
