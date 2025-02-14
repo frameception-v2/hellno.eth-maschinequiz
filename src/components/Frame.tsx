@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useState } from "react";
 import sdk, { AddFrame, type Context } from "@farcaster/frame-sdk";
+import { NeynarAPIClient, Configuration } from "@neynar/nodejs-sdk";
 import {
   Card,
   CardHeader,
@@ -73,6 +74,9 @@ export default function Frame() {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleAnswer = (answerIndex: number) => {
     setSelectedAnswer(answerIndex);
@@ -122,6 +126,60 @@ export default function Frame() {
         <h1 className="text-2xl font-bold text-center mb-4 text-neutral-900">
           {PROJECT_TITLE}
         </h1>
+        
+        {/* Neynar Cast Search */}
+        <div className="mb-6 space-y-2">
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            setIsLoading(true);
+            try {
+              const config = new Configuration({ apiKey: process.env.NEXT_PUBLIC_NEYNAR_API_KEY });
+              const client = new NeynarAPIClient(config);
+              const result = await client.searchCasts(searchInput, { limit: 3 });
+              setSearchResults(result.result.casts);
+            } catch (error) {
+              console.error("Search failed:", error);
+              setSearchResults([]);
+            } finally {
+              setIsLoading(false);
+            }
+          }}>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Search casts..."
+                className="flex-1 p-2 border rounded"
+                disabled={isLoading}
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 bg-purple-100 text-purple-800 rounded hover:bg-purple-200 disabled:opacity-50"
+                disabled={isLoading || !searchInput}
+              >
+                {isLoading ? 'Searching...' : 'Search'}
+              </button>
+            </div>
+          </form>
+
+          {searchResults.length > 0 && (
+            <div className="space-y-2">
+              {searchResults.map((cast) => (
+                <div 
+                  key={cast.hash} 
+                  className="p-2 text-sm border rounded hover:bg-gray-50 cursor-pointer"
+                  onClick={() => window.open(`https://warpcast.com/${cast.author.username}/${cast.hash.slice(0, 8)}`, '_blank')}
+                >
+                  <div className="font-medium text-purple-600">
+                    @{cast.author.username}
+                  </div>
+                  <div className="truncate">{cast.text}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         
         {!quizCompleted ? (
           <QuizCard
