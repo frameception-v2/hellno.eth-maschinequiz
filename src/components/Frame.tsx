@@ -135,7 +135,7 @@ export default function Frame() {
             try {
               const config = new Configuration({ apiKey: process.env.NEXT_PUBLIC_NEYNAR_API_KEY || '' });
               const client = new NeynarAPIClient(config);
-              const result = await client.searchCasts(searchInput, { limit: 3 });
+              const result = await client.searchCasts({ q: searchInput, limit: 3 });
               setSearchResults(result.result.casts);
             } catch (error) {
               console.error("Search failed:", error);
