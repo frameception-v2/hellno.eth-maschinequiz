@@ -75,6 +75,8 @@ export default function Frame() {
   const [score, setScore] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -135,7 +137,19 @@ export default function Frame() {
             try {
               const config = new Configuration({ apiKey: process.env.NEXT_PUBLIC_NEYNAR_API_KEY || '' });
               const client = new NeynarAPIClient(config);
-              const result = await client.searchCasts({ q: searchInput, limit: 3 });
+              
+              // Build search query with date filters
+              const searchParams = new URLSearchParams();
+              searchParams.append('q', searchInput);
+              if (startDate) searchParams.append('after', startDate);
+              if (endDate) searchParams.append('before', endDate);
+
+              const result = await client.searchCasts({ 
+                q: searchParams.toString(),
+                limit: 5,
+                viewerFid: context?.user?.fid ? parseInt(context.user.fid) : undefined
+              });
+              
               setSearchResults(result.result.casts);
             } catch (error) {
               console.error("Search failed:", error);
@@ -144,22 +158,38 @@ export default function Frame() {
               setIsLoading(false);
             }
           }}>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Search casts..."
-                className="flex-1 p-2 border rounded"
-                disabled={isLoading}
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 bg-purple-100 text-purple-800 rounded hover:bg-purple-200 disabled:opacity-50"
-                disabled={isLoading || !searchInput}
-              >
-                {isLoading ? 'Searching...' : 'Search'}
-              </button>
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  placeholder="Search casts..."
+                  className="flex-1 p-2 border rounded text-sm"
+                  disabled={isLoading}
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50 text-sm"
+                  disabled={isLoading || !searchInput}
+                >
+                  {isLoading ? 'Searching...' : 'Search'}
+                </button>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="date"
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="p-2 border rounded text-sm flex-1"
+                  placeholder="From date"
+                />
+                <input
+                  type="date"
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="p-2 border rounded text-sm flex-1"
+                  placeholder="To date"
+                />
+              </div>
             </div>
           </form>
 
@@ -171,8 +201,20 @@ export default function Frame() {
                   className="p-2 text-sm border rounded hover:bg-gray-50 cursor-pointer"
                   onClick={() => window.open(`https://warpcast.com/${cast.author.username}/${cast.hash.slice(0, 8)}`, '_blank')}
                 >
-                  <div className="font-medium text-purple-600">
-                    @{cast.author.username}
+                  <div className="flex items-center gap-2 mb-1">
+                    {cast.author.pfp_url && (
+                      <img 
+                        src={cast.author.pfp_url} 
+                        alt={cast.author.username}
+                        className="w-5 h-5 rounded-full"
+                      />
+                    )}
+                    <div className="font-medium text-purple-600">
+                      {cast.author.display_name || `@${cast.author.username}`}
+                    </div>
+                    <span className="text-gray-500 text-xs">
+                      {new Date(cast.timestamp).toLocaleDateString()}
+                    </span>
                   </div>
                   <div className="truncate">{cast.text}</div>
                 </div>
